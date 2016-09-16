@@ -1,0 +1,30 @@
+From b7d09dd1516e6985c88ba018eef79cfcd524a53a Mon Sep 17 00:00:00 2001
+From: Tarvi Pillessaar <tarvip@gmail.com>
+Date: Sun, 28 Aug 2016 13:11:49 +0000
+Subject: [PATCH 2/2] If we have h264 SD content assume it is widescreen
+
+Most of h264 SD broadcasts are widescreen.
+---
+ xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+index 47d9619..71d117f 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+@@ -117,6 +117,12 @@ bool CDVDVideoCodecAmlogic::Open(CDVDStreamInfo &hints, CDVDCodecOptions &option
+       }
+       //m_bitparser = new CBitstreamParser();
+       //m_bitparser->Open();
++
++      // if we have SD PAL content assume it is widescreen
++      // correct aspect ratio will be detected later anyway
++      if (m_hints.width == 720 && m_hints.height == 576 && m_hints.aspect == 0.0f)
++          m_hints.aspect = 1.8181818181818181;
++
+       break;
+     case AV_CODEC_ID_MPEG4:
+     case AV_CODEC_ID_MSMPEG4V2:
+-- 
+2.9.3
+
