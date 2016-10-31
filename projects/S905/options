@@ -149,6 +149,7 @@
     KERNEL_NAME="kernel.img"
 
   # set the addon dirs
+<<<<<<< HEAD
     case $TARGET_ARCH in
       arm)
         ADDON_PATH="$ADDON_VERSION/WeTek_Play/$TARGET_ARCH"
@@ -160,6 +161,11 @@
         ADDON_URL="$ADDON_SERVER_URL/$ADDON_PATH"
         ;;
     esac
+=======
+    ADDON_SERVER_URL="https://raw.github.com/wrxtasy/LibreELEC.tv.7.0/LE-7.0.Addons"
+    ADDON_PATH="addons/$ADDON_VERSION/Odroid_C2/$TARGET_ARCH"
+    ADDON_URL="$ADDON_SERVER_URL/$ADDON_PATH"
+>>>>>>> Add RTL8189ES to external packages
 
   # OEM packages for OEM's (yes / no)
     OEM_SUPPORT="yes"

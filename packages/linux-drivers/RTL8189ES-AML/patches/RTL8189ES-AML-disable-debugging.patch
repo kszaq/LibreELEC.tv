@@ -1,0 +1,11 @@
+--- a/rtl8189ES/include/autoconf.h
++++ b/rtl8189ES/include/autoconf.h
+@@ -249,7 +249,7 @@
+  */
+ #define DBG	1
+ 
+-#define CONFIG_DEBUG /* DBG_871X, etc... */
++//#define CONFIG_DEBUG /* DBG_871X, etc... */
+ //#define CONFIG_DEBUG_RTL871X /* RT_TRACE, RT_PRINT_DATA, _func_enter_, _func_exit_ */
+ 
+ #define CONFIG_PROC_DEBUG
