@@ -1,0 +1,11 @@
+--- a/rtl8xxx_EU/include/rtw_mlme_ext.h
++++ b/rtl8xxx_EU/include/rtw_mlme_ext.h
+@@ -27,7 +27,7 @@
+ //	So, this driver tried to extend the dwell time for each scanning channel.
+ //	This will increase the chance to receive the probe response from SoftAP.
+ 
+-#define SURVEY_TO		(100)
++#define SURVEY_TO		(150)
+ #define REAUTH_TO		(300) //(50)
+ #define REASSOC_TO		(300) //(50)
+ //#define DISCONNECT_TO	(3000)
