@@ -1,0 +1,44 @@
+diff --git a/media/drivers/media/platform/soc_camera/soc_camera.c b/media/drivers/media/platform/soc_camera/soc_camera.c
+index 680ab43..fbf53da 100644
+--- a/media/drivers/media/platform/soc_camera/soc_camera.c
++++ b/media/drivers/media/platform/soc_camera/soc_camera.c
+@@ -23,6 +23,7 @@
+ #include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
++#include <linux/of_i2c.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
+diff --git a/media_build/v4l/compat.h b/media_build/v4l/compat.h
+index aee654a..03e1882 100644
+--- a/media_build/v4l/compat.h
++++ b/media_build/v4l/compat.h
+@@ -1570,7 +1570,7 @@ static inline __s32 sign_extend32(__u32 value, int index)
+ #endif
+ 
+ #ifdef NEED_WRITEL_RELAXED
+-#define writel_relaxed writel
++// #define writel_relaxed writel
+ #endif
+ 
+ #ifdef NEED_GET_USER_PAGES_UNLOCKED
+diff --git a/media_build/v4l/versions.txt b/media_build/v4l/versions.txt
+index 0a84755..4bb122f 100644
+--- a/media_build/v4l/versions.txt
++++ b/media_build/v4l/versions.txt
+@@ -1,5 +1,6 @@
+ # Use this for stuff for drivers that don't compile
+ [9.255.255]
++VIDEO_S5C73M3
+ 
+ [4.2.0]
+ # needs led_trigger_remove
+@@ -76,7 +77,6 @@ DVB_NETUP_UNIDVB
+ [3.6.0]
+ # needs include/linux/sizes.h
+ VIDEO_M5MOLS
+-VIDEO_S5C73M3
+ # needs dma_mmap_coherent and sg_alloc_table_from_pages.
+ VIDEOBUF2_DMA_CONTIG
+ 

@@ -1,0 +1,24 @@
+From 461e5f300ad9d27653cd5fe0ed054f9f1f43eccf Mon Sep 17 00:00:00 2001
+From: Alex Deryskyba <alex@codesnake.com>
+Date: Sun, 19 Jun 2016 07:16:00 +0200
+Subject: [PATCH] [aml] Make CEGLNativeTypeAmlogic compatible with Amlogic S905
+ SoC
+
+---
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+index 3d6598a..88cd385 100644
+--- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
++++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+@@ -55,8 +55,7 @@ bool CEGLNativeTypeAmlogic::CheckCompatibility()
+   std::string modalias = "/sys/class/graphics/" + m_framebuffer_name + "/device/modalias";
+ 
+   SysfsUtils::GetString(modalias, name);
+-  StringUtils::Trim(name);
+-  if (name == "platform:mesonfb")
++  if (name.find("meson") != std::string::npos)
+     return true;
+   return false;
+ }

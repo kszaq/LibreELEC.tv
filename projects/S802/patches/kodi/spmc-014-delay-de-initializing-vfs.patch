@@ -1,0 +1,44 @@
+From 0390d07514c00e970053aea4cfd3ed00ae7b54d0 Mon Sep 17 00:00:00 2001
+From: "Chris \"Koying\" Browet" <cbro@semperpax.com>
+Date: Sun, 27 Nov 2016 13:13:32 +0100
+Subject: [PATCH] FIX: delay de-intializing vfs until after scripts are done
+
+smb access from scripts after smb.Deinit() -> crash
+---
+ xbmc/Application.cpp | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
+index 093f347..df54c64 100644
+--- a/xbmc/Application.cpp
++++ b/xbmc/Application.cpp
+@@ -3014,14 +3014,6 @@ void CApplication::Stop(int exitCode)
+     g_RarManager.ClearCache(true);
+ #endif
+ 
+-#ifdef HAS_FILESYSTEM_SFTP
+-    CSFTPSessionManager::DisconnectAllSessions();
+-#endif
+-
+-#if defined(TARGET_POSIX) && defined(HAS_FILESYSTEM_SMB)
+-    smb.Deinit();
+-#endif
+-
+     CLog::Log(LOGNOTICE, "unload skin");
+     UnloadSkin();
+ 
+@@ -3044,6 +3036,14 @@ void CApplication::Stop(int exitCode)
+     // unloading
+     CScriptInvocationManager::GetInstance().Uninitialize();
+ 
++#ifdef HAS_FILESYSTEM_SFTP
++    CSFTPSessionManager::DisconnectAllSessions();
++#endif
++
++#if defined(TARGET_POSIX) && defined(HAS_FILESYSTEM_SMB)
++    smb.Deinit();
++#endif
++
+     g_Windowing.DestroyRenderSystem();
+     g_Windowing.DestroyWindow();
+     g_Windowing.DestroyWindowSystem();

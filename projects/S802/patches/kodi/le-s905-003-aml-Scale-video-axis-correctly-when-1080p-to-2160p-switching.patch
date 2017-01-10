@@ -1,0 +1,74 @@
+From ac8f99d5f09c7a9ca83da5d9678bc817d8adc528 Mon Sep 17 00:00:00 2001
+From: Jamie Coldhill <wrxtasy@amnet.net.au>
+Date: Thu, 6 Oct 2016 17:54:40 +0800
+Subject: [PATCH] aml: Scale video axis correctly when 1080p to 2160p switching
+ Fixup 720p60hz fallback resolution
+
+---
+ xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp | 10 +++++++++-
+ xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.h   |  2 ++
+ xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp       |  2 +-
+ 3 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+index 7236444..42774bd 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+@@ -2195,6 +2195,13 @@ void CAMLCodec::SetVideoRect(const CRect &SrcRect, const CRect &DestRect)
+     update = true;
+   }
+ 
++  RESOLUTION video_res = g_graphicsContext.GetVideoResolution();
++  if (m_video_res != video_res)
++  {
++    m_video_res = video_res;
++    update = true;
++  }
++
+   if (!update)
+   {
+     // mainvideo 'should' be showing already if we get here, make sure.
+@@ -2208,7 +2215,8 @@ void CAMLCodec::SetVideoRect(const CRect &SrcRect, const CRect &DestRect)
+ #ifdef TARGET_ANDROID
+   display = m_display_rect;
+ #else
+-  display = gui;
++  const RESOLUTION_INFO& video_res_info = CDisplaySettings::GetInstance().GetResolutionInfo(video_res);
++  display = m_display_rect = CRect(0, 0, video_res_info.iScreenWidth, video_res_info.iScreenHeight);
+ #endif
+   if (gui != display)
+   {
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.h b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.h
+index 3aa025d..316a10e 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.h
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.h
+@@ -23,6 +23,7 @@
+ #include "cores/dvdplayer/DVDStreamInfo.h"
+ #include "cores/VideoRenderers/RenderFeatures.h"
+ #include "guilib/Geometry.h"
++#include "guilib/Resolution.h"
+ #include "rendering/RenderSystem.h"
+ #include "threads/Thread.h"
+ 
+@@ -89,4 +90,5 @@ private:
+   float            m_zoom;
+   int              m_contrast;
+   int              m_brightness;
++  RESOLUTION       m_video_res;
+ };
+diff --git a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+index 3cbb604..67f9984 100644
+--- a/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
++++ b/xbmc/windowing/egl/EGLNativeTypeAmlogic.cpp
+@@ -177,7 +177,7 @@ bool CEGLNativeTypeAmlogic::GetPreferredResolution(RESOLUTION_INFO *res) const
+   if (!GetNativeResolution(res))
+   {
+     // punt to 720p if we get nothing
+-    aml_mode_to_resolution("720p", res);
++    aml_mode_to_resolution("720p60hz", res);
+   }
+ 
+   return true;
+-- 
+1.8.3.1
+

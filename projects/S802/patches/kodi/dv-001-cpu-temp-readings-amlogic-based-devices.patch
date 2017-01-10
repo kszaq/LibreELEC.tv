@@ -1,0 +1,48 @@
+From: Immanuel Klinkenberg <drieschel@yahoo.de>
+Date: Thu, 7 Jul 2016 ~ 20:50 +2GMT
+Subject: [PATCH] CPU temps reading fix for amlogic based devices which are using aml_thermal interface.
+
+---
+
+diff -Naur kodi-16.1-c327c53.orig/xbmc/utils/CPUInfo.cpp kodi-16.1-c327c53/xbmc/utils/CPUInfo.cpp
+--- kodi-16.1-c327c53.orig/xbmc/utils/CPUInfo.cpp	2016-07-07 19:30:48.309897861 +0200
++++ kodi-16.1-c327c53/xbmc/utils/CPUInfo.cpp	2016-07-07 20:04:10.000000000 +0200
+@@ -24,6 +24,7 @@
+ #include "utils/Temperature.h"
+ #include <string>
+ #include <string.h>
++#include <sys/stat.h>
+ 
+ #if defined(TARGET_DARWIN)
+ #include <sys/types.h>
+@@ -259,8 +260,18 @@
+     m_cores[core.m_id] = core;
+   }
+ #else
++  struct stat stBuf;
++  m_isAmlThermal = stat("/sys/bus/platform/devices/aml_thermal", &stBuf) == 0 && S_ISDIR(stBuf.st_mode);
+   m_fProcStat = fopen("/proc/stat", "r");
+-  m_fProcTemperature = fopen("/proc/acpi/thermal_zone/THM0/temperature", "r");
++  
++  if(m_isAmlThermal)
++  {
++    m_fProcTemperature = fopen("/sys/class/thermal/thermal_zone1/temp", "r");
++    if (m_fProcTemperature == NULL)   
++      m_fProcTemperature = fopen("/sys/class/thermal/thermal_zone0/temp", "r");  
++  }
++  if (m_fProcTemperature == NULL)
++    m_fProcTemperature = fopen("/proc/acpi/thermal_zone/THM0/temperature", "r");
+   if (m_fProcTemperature == NULL)
+     m_fProcTemperature = fopen("/proc/acpi/thermal_zone/THRM/temperature", "r");
+   if (m_fProcTemperature == NULL)
+diff -Naur kodi-16.1-c327c53.orig/xbmc/utils/CPUInfo.h kodi-16.1-c327c53/xbmc/utils/CPUInfo.h
+--- kodi-16.1-c327c53.orig/xbmc/utils/CPUInfo.h	2016-07-07 19:30:48.309897861 +0200
++++ kodi-16.1-c327c53/xbmc/utils/CPUInfo.h	2016-07-07 20:00:57.000000000 +0200
+@@ -111,6 +111,7 @@
+   FILE* m_fProcTemperature;
+   FILE* m_fCPUFreq;
+   bool m_cpuInfoForFreq;
++  bool m_isAmlThermal = false;
+ #elif defined(TARGET_WINDOWS)
+   PDH_HQUERY m_cpuQueryFreq;
+   PDH_HQUERY m_cpuQueryLoad;

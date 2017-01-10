@@ -1,0 +1,22 @@
+diff --git a/arch/arm/mach-meson8/pm.c b/arch/arm/mach-meson8/pm.c
+index dec4738..1456796 100755
+--- a/arch/arm/mach-meson8/pm.c
++++ b/arch/arm/mach-meson8/pm.c
+@@ -345,7 +345,7 @@ static struct platform_suspend_ops meson_pm_ops = {
+ 
+ static void m6ref_set_vccx2(int power_on)
+ {
+-	/*
++
+     if(power_on == OFF) {
+         printk("m6ref_set_vccx2: OFF");
+         CLEAR_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<15);
+@@ -355,7 +355,7 @@ static void m6ref_set_vccx2(int power_on)
+         CLEAR_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<15);
+         CLEAR_AOBUS_REG_MASK(AO_GPIO_O_EN_N, 1<<31);
+     }
+-	*/
++
+     return;
+ }
+ 
