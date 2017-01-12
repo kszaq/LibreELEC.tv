@@ -68,7 +68,7 @@
     OPENGL="no"
 
   # OpenGL-ES implementation to use (no / bcm2835-driver / gpu-viv-bin-mx6q / opengl-meson)
-    OPENGLES="opengl-meson8"
+    OPENGLES="opengl-meson"
 
   # Amlogic Meson SOC family (8 / 6 / gxbb)
     MESON_FAMILY="8"
@@ -117,7 +117,7 @@
     AMREMOTE_SUPPORT="yes"
 
   # build with swap support (yes / no)
-    SWAP_SUPPORT="no"
+    SWAP_SUPPORT="yes"
 
   # swap support enabled per default (yes / no)
     SWAP_ENABLED_DEFAULT="no"
