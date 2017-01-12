@@ -17,35 +17,29 @@
 #  along with LibreELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="qca9377-aml"
+PKG_NAME="qca9377-firmware-aml"
+PKG_VERSION="1.0.0"
 PKG_REV="1"
-PKG_ARCH="arm aarch64"
-PKG_LICENSE="GPL"
-PKG_SITE="https://boundarydevices.com/new-silex-wifi-802-11ac-bt4-1-module/"
-PKG_VERSION="boundary-LNX.LEH.4.2.2.2-4.5.20.034"
-PKG_URL="https://github.com/boundarydevices/qcacld-2.0/archive/$PKG_VERSION.tar.gz"
-PKG_SOURCE_DIR="qcacld-2.0-$PKG_VERSION*"
-PKG_DEPENDS_TARGET="toolchain linux"
-PKG_NEED_UNPACK="$LINUX_DEPENDS"
-PKG_SECTION="driver"
-PKG_SHORTDESC="qca9377-aml"
-PKG_LONGDESC="qca9377-aml"
+PKG_ARCH="any"
+PKG_LICENSE="Free-to-use"
+PKG_SITE="https://boundarydevices.com/product/bd_sdmac_wifi/"
+PKG_URL="http://linode.boundarydevices.com/repos/apt/ubuntu-relx/pool/main/q/qca-firmware/qca-firmware_$PKG_VERSION.orig.tar.gz"
+PKG_SOURCE_DIR="qca-firmware-$PKG_VERSION"
+PKG_DEPENDS_TARGET="toolchain"
+PKG_SECTION="firmware"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-if [ "$TARGET_KERNEL_ARCH" = "arm64" -a "$TARGET_ARCH" = "arm" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET gcc-linaro-aarch64-linux-gnu:host"
-  export PATH=$ROOT/$TOOLCHAIN/lib/gcc-linaro-aarch64-linux-gnu/bin/:$PATH
-  TARGET_PREFIX=aarch64-linux-gnu-
-fi
-
 make_target() {
-  ARCH=$TARGET_KERNEL_ARCH CROSS_COMPILE=$TARGET_PREFIX \
-    LDFLAGS="" CFLAGS="" CONFIG_CLD_HL_SDIO_CORE=y KERNEL_SRC=$(kernel_path) make
+  : # nothing todo
 }
 
 makeinstall_target() {
-  mkdir -p $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME
-  cp $ROOT/$PKG_BUILD/wlan.ko $INSTALL/lib/modules/$(get_module_dir)/$PKG_NAME/
+  mkdir -p $INSTALL/lib/firmware
+
+  cp -P LICENSE.TXT $INSTALL/lib/firmware/LICENSE.qca
+  cp -P *.bin $INSTALL/lib/firmware
+  cp -PR qca $INSTALL/lib/firmware
+  cp -PR wlan $INSTALL/lib/firmware
 }
