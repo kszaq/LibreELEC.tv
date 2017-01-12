@@ -1,0 +1,18 @@
+diff --git a/scripts/mkcompile_h b/scripts/mkcompile_h
+--- a/scripts/mkcompile_h
++++ b/scripts/mkcompile_h
+@@ -43,12 +43,12 @@
+ 	TIMESTAMP=$KBUILD_BUILD_TIMESTAMP
+ fi
+ if test -z "$KBUILD_BUILD_USER"; then
+-	LINUX_COMPILE_BY=$(whoami | sed 's/\\/\\\\/')
++	LINUX_COMPILE_BY="LibreELEC-Compiler"
+ else
+ 	LINUX_COMPILE_BY=$KBUILD_BUILD_USER
+ fi
+ if test -z "$KBUILD_BUILD_HOST"; then
+-	LINUX_COMPILE_HOST=`hostname`
++	LINUX_COMPILE_HOST="LibreELEC-System"
+ else
+ 	LINUX_COMPILE_HOST=$KBUILD_BUILD_HOST
+ fi

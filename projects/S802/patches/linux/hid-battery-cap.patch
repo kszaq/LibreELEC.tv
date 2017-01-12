@@ -1,0 +1,16 @@
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -363,11 +363,11 @@
+ 					      dev->battery_report_type);
+ 
+ 		if (ret != 2) {
+-			if (ret >= 0)
+-				ret = -EINVAL;
++			ret = -ENODATA;
+ 			kfree(buf);
+ 			break;
+ 		}
++		ret = 0;
+ 
+ 		if (dev->battery_min < dev->battery_max &&
+ 		    buf[1] >= dev->battery_min &&

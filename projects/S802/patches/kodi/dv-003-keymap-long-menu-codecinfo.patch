@@ -1,0 +1,12 @@
+diff --git a/system/keymaps/keyboard.xml b/system/keymaps/keyboard.xml
+index 5252e2a..d7dfd18 100644
+--- a/system/keymaps/keyboard.xml
++++ b/system/keymaps/keyboard.xml
+@@ -312,6 +312,7 @@
+       <enter mod="longpress">PlayPause</enter>
+       <m>OSD</m>
+       <menu>OSD</menu>
++      <menu mod="longpress">CodecInfo</menu>
+       <i>Info</i>
+       <o>CodecInfo</o>
+       <z>AspectRatio</z>
