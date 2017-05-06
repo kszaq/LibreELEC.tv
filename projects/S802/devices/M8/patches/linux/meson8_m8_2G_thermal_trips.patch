@@ -1,0 +1,17 @@
+--- a/arch/arm/boot/dts/amlogic/meson8_m8_2G.dtd
++++ b/arch/arm/boot/dts/amlogic/meson8_m8_2G.dtd
+@@ -921,10 +921,10 @@
+ 		compatible = "amlogic-thermal";
+ 		#thermal-cells=<7>;
+ 		dev_name = "aml_thermal";
+-        trip_point=<70 1608001 1608001 511 511 3 5
+-                    80 1200001 1200001 435 435 2 4
+-                    90  800001 800001  328 328 2 3
+-                    260 0xffffffff 0xffffffff 0xffffffff 0xffffffff 0xffffffff 0xffffffff>;
++        trip_point=<85 1608001 1608001 638 638 4 8
++                    90 1416001 1416001 511 511 3 6
++                    95 1296001 1296001 426 426 2 4
++                    150 696001  696001 319 319 1 2>;
+ 		cpu_cali_a=<0>;
+ 		idle_interval=<1000>;
+         use_virtual_thermal;

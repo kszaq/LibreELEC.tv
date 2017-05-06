@@ -1,0 +1,23 @@
+diff --git a/xbmc/input/linux/LinuxInputDevices.cpp b/xbmc/input/linux/LinuxInputDevices.cpp
+index 73f338f..ace6382 100644
+--- a/xbmc/input/linux/LinuxInputDevices.cpp
++++ b/xbmc/input/linux/LinuxInputDevices.cpp
+@@ -269,11 +269,13 @@ KeyMap keyMap[] = {
+   { KEY_SELECT        , XBMCK_RETURN      },
+   { KEY_CONFIG        , XBMCK_CONFIG      },
+   { KEY_EPG           , XBMCK_EPG         },
+-  // The Little Black Box Remote Additions
+-  { 384               , XBMCK_LEFT        }, // Red
+-  { 378               , XBMCK_RIGHT       }, // Green
+-  { 381               , XBMCK_UP          }, // Yellow
+-  { 366               , XBMCK_DOWN        }, // Blue
++  { 362               , XBMCK_RED         },
++  { 359               , XBMCK_GREEN       },
++  { 361               , XBMCK_YELLOW      },
++  { 363               , XBMCK_BLUE        },
++  { 15                , XBMCK_ZOOM        },
++  { 135               , XBMCK_l           },
++  { 136               , XBMCK_k           },
+ };
+ 
+ typedef enum

@@ -1,0 +1,27 @@
+--- a/drivers/amlogic/thermal/amlogic_thermal.c
++++ b/drivers/amlogic/thermal/amlogic_thermal.c
+@@ -639,6 +639,7 @@
+         printk("final temp:%d\n", final_temp);
+     #endif
+     }
++    final_temp = final_temp * 1000;
+     return final_temp;
+ }
+ #endif
+@@ -665,14 +666,14 @@
+ #else
+ #ifdef CONFIG_AML_VIRTUAL_THERMAL
+     if (trim_flag) {
+-	    *temp = (unsigned long)get_cpu_temp();
++	    *temp = (1000 * (unsigned long)get_cpu_temp());
+     } else if (virtual_thermal_en) {
+ 	    *temp = aml_cal_virtual_temp();
+     } else {
+         *temp = 45000;                  // fix cpu temperature to 45 if not trimed && disable virtual thermal
+     }
+ #else
+-	*temp = (unsigned long)get_cpu_temp();
++	*temp = (1000 * (unsigned long)get_cpu_temp());
+ 	pr_debug( "========  temp=%ld\n",*temp);
+ #endif
+ #endif

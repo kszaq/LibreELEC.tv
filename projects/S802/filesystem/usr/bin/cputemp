@@ -1,0 +1,133 @@
+#!/bin/sh
+
+################################################################################
+#      This file is part of OpenELEC - http://www.openelec.tv
+#      Copyright (C) 2009-2014 Stephan Raue (stephan@openelec.tv)
+#
+#  OpenELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  OpenELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+# inspired by
+# https://github.com/xtranophilist/gnome-shell-extension-cpu-temperature/blob/master/extension.js
+
+TEMP=0
+TEMPc=0
+TEMPf=0
+
+isAmlThermal="no";
+if [ -d '/sys/bus/platform/devices/aml_thermal' ]; then
+  isAmlThermal="yes";
+fi
+
+if [ $(basename "$0") = "gputemp" -o "$1" = "gpu" ]; then
+  if which lspci >/dev/null; then
+    if lspci -n | grep 0300 | grep -q 10de; then
+      [ -x /usr/bin/nvidia-smi ] && TEMP=`/usr/bin/nvidia-smi -q -x | grep '<gpu_temp>' | awk '{ print $1 }' | sed 's,<gpu_temp>,,g'`
+    fi
+  fi
+fi
+
+if [ "$isAmlThermal" = "yes" -a "$TEMP" = "0" ]; then
+  if [ -f /sys/class/thermal/thermal_zone1/temp ]; then
+    TEMP=`cat /sys/class/thermal/thermal_zone1/temp`
+    TempTrip0=$(cat /sys/class/thermal/thermal_zone1/trip_point_0_temp)
+    TempTrip1=$(cat /sys/class/thermal/thermal_zone1/trip_point_1_temp)
+    TempTrip2=$(cat /sys/class/thermal/thermal_zone1/trip_point_2_temp)
+    TempTrip3=$(cat /sys/class/thermal/thermal_zone1/trip_point_3_temp)
+    TempTrip0="$(( $TempTrip0 / 1000 ))"
+    TempTrip1="$(( $TempTrip1 / 1000 ))"
+    TempTrip2="$(( $TempTrip2 / 1000 ))"
+    TempTrip3="$(( $TempTrip3 / 1000 ))"
+  fi
+  if [ "$TEMP" = "0" -a -f /sys/class/thermal/thermal_zone0/temp ]; then
+    TEMP=`cat /sys/class/thermal/thermal_zone0/temp`
+  fi
+  for cpu in cpu0 cpu1 cpu2 cpu3; do
+    if [ -f /sys/bus/cpu/devices/${cpu}/online ]; then
+	if [ ! "$(cat /sys/bus/cpu/devices/${cpu}/online)" = 0 ]; then
+		CPUsOn="${CPUsOn} ${cpu}"
+	fi
+    fi
+    if [ -f /sys/bus/cpu/devices/${cpu}/cpufreq/scaling_cur_freq ]; then
+	CPUsCur=$(cat /sys/bus/cpu/devices/${cpu}/cpufreq/scaling_cur_freq)
+    fi
+    if [ -f /sys/bus/cpu/devices/${cpu}/cpufreq/scaling_min_freq ]; then
+	CPUsMin=$(cat /sys/bus/cpu/devices/${cpu}/cpufreq/scaling_min_freq)
+    fi
+    if [ -f /sys/bus/cpu/devices/${cpu}/cpufreq/scaling_max_freq ]; then
+	CPUsMax=$(cat /sys/bus/cpu/devices/${cpu}/cpufreq/scaling_max_freq)
+    fi
+    if [ -f /sys/bus/cpu/devices/cpu0/cpufreq/scaling_governor ]; then
+	CPUsGov=$(cat /sys/bus/cpu/devices/cpu0/cpufreq/scaling_governor)
+    fi
+
+  done
+fi
+
+  # used with coretemp
+  for hwmon in hwmon0 hwmon1; do
+    for temp in temp1 temp2; do
+      if [ "$TEMP" = "0" -a -f /sys/class/hwmon/${hwmon}/${temp}_input ]; then
+        if [ -f /sys/class/hwmon/${hwmon}/name ]; then
+          if [ ! "$(cat /sys/class/hwmon/${hwmon}/name)" = acpitz ]; then
+            TEMP=$(cat /sys/class/hwmon/${hwmon}/${temp}_input)
+          fi
+        fi
+      fi
+    done
+  done
+
+  # used on AMD systems
+  if [ "$TEMP" = "0" -a -f /sys/class/hwmon/hwmon0/device/temp1_input ]; then
+    TEMP=`cat /sys/class/hwmon/hwmon0/device/temp1_input`
+  fi
+
+  # used on ION systems
+  if [ "$TEMP" = "0" -a -f /sys/class/hwmon/hwmon0/device/temp2_input ]; then
+    TEMP=`cat /sys/class/hwmon/hwmon0/device/temp2_input`
+  fi
+
+  # used on some intel systems
+  if [ "$TEMP" = "0" -a -f /sys/bus/acpi/devices/LNXTHERM\:00/thermal_zone/temp ]; then
+    TEMP=`cat /sys/bus/acpi/devices/LNXTHERM\:00/thermal_zone/temp`
+  fi
+
+  # used on some intel systems
+  if [ "$TEMP" = "0" -a -f /sys/devices/virtual/thermal/thermal_zone0/temp ]; then
+    TEMP=`cat /sys/devices/virtual/thermal/thermal_zone0/temp`
+  fi
+
+  # used on RaspberryPi
+  if [ "$TEMP" = "0" -a -f /sys/class/thermal/thermal_zone0/temp ]; then
+    TEMP=`cat /sys/class/thermal/thermal_zone0/temp`
+  fi
+
+  TEMP="$(( $TEMP / 1000 ))"
+
+TEMPc=$TEMP
+TEMPf=$(echo $TEMPc | awk '{printf "%4.1f\n",$1*1.8+32}') 
+echo "CPU Temp - $TEMPc C / $TEMPf F"
+echo "-----------------------------------"
+echo "CPUs On - $CPUsOn"
+echo "-----------------------------------"
+echo "CPU Governor - $CPUsGov"
+echo "CPU Cur Scaling - $CPUsCur"
+echo "CPU Max Scaling - $CPUsMax"
+echo "CPU Min Scaling - $CPUsMin"
+echo "-----------------------------------"
+echo "CPU Trip 0 - $TempTrip0 C"
+echo "CPU Trip 1 - $TempTrip1 C"
+echo "CPU Trip 2 - $TempTrip2 C"
+echo "CPU Trip 3 - $TempTrip3 C"
+

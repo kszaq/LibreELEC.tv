@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<advancedsettings>
+  <showexitbutton>false</showexitbutton>
+  <samba>
+    <clienttimeout>30</clienttimeout>
+  </samba>
+  <cache>
+    <freememorycachepercent>75</freememorycachepercent>
+  </cache>
+  <network>
+    <readbufferfactor>4.0</readbufferfactor>
+  </network>
+</advancedsettings>

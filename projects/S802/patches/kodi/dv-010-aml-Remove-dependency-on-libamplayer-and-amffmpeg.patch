@@ -1,0 +1,58 @@
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+index 7236444..d960354 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/AMLCodec.cpp
+@@ -55,9 +55,9 @@ extern "C" {
+ #include <stdlib.h>
+ #include <sys/ioctl.h>
+ 
+-// amcodec include
+ extern "C" {
+ #include <amcodec/codec.h>
++#include <libavutil/avutil.h>
+ }  // extern "C"
+ 
+ typedef struct {
+@@ -100,8 +100,7 @@ public:
+ 
+ class DllLibAmCodec : public DllDynamic, DllLibamCodecInterface
+ {
+-  // libamcodec is static linked into libamplayer.so or libamcodec.so
+-  DECLARE_DLL_WRAPPER(DllLibAmCodec, "libamplayer.so")
++  DECLARE_DLL_WRAPPER(DllLibAmCodec, "libamcodec.so")
+ 
+   DEFINE_METHOD1(int, codec_init,               (codec_para_t *p1))
+   DEFINE_METHOD1(int, codec_close,              (codec_para_t *p1))
+@@ -418,7 +417,6 @@ static vformat_t codecid_to_vformat(enum AVCodecID id)
+     case AV_CODEC_ID_H263I:
+     case AV_CODEC_ID_MSMPEG4V2:
+     case AV_CODEC_ID_MSMPEG4V3:
+-    case AV_CODEC_ID_FLV1:
+       format = VFORMAT_MPEG4;
+       break;
+     case AV_CODEC_ID_RV10:
+@@ -1236,10 +1234,6 @@ int set_header_info(am_private_t *para)
+       {
+         return divx3_prefix(pkt);
+       }
+-      else if (para->video_codec_type == VIDEO_DEC_FORMAT_H263)
+-      {
+-        return PLAYER_UNSUPPORT;
+-      }
+     } else if (para->video_format == VFORMAT_VC1) {
+         if (para->video_codec_type == VIDEO_DEC_FORMAT_WMV3) {
+             unsigned i, check_sum = 0, data_len = 0;
+diff --git a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+index 263acde..2357209 100644
+--- a/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
++++ b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+@@ -122,9 +122,6 @@ bool CDVDVideoCodecAmlogic::Open(CDVDStreamInfo &hints, CDVDCodecOptions &option
+       // amcodec can't handle h263
+       return false;
+       break;
+-    case AV_CODEC_ID_FLV1:
+-      m_pFormatName = "am-flv1";
+-      break;
+     case AV_CODEC_ID_RV10:
+     case AV_CODEC_ID_RV20:
+     case AV_CODEC_ID_RV30:

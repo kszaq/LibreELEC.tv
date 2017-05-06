@@ -17,4 +17,4 @@ RestartSec=2
 StartLimitInterval=0
 
 [Install]
-WantedBy=bluetooth.target
+WantedBy=multi-user.target bluetooth.target

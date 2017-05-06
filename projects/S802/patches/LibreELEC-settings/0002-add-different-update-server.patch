@@ -1,0 +1,117 @@
+diff --git a/src/defaults.py b/src/defaults.py
+index 79588a7..0f25ae7 100644
+--- a/src/defaults.py
++++ b/src/defaults.py
+@@ -84,6 +84,8 @@ system = {
+     'SET_CLOCK_CMD': '/sbin/hwclock --systohc --utc',
+     'UPDATE_REQUEST_URL': 'http://update.libreelec.tv/updates.php',
+     'UPDATE_DOWNLOAD_URL': 'http://%s.libreelec.tv/%s',
++    'UPDATE_REQUEST_URL2': 'http://www.tdknet.com/LibreELEC/update.php',
++    'UPDATE_DOWNLOAD_URL2': 'http://www.tdknet.com/LibreELEC/%s/%s',
+     'LOCAL_UPDATE_DIR': '/storage/.update/',
+     'GET_CPU_FLAG': "cat /proc/cpuinfo | grep -q 'flags.* lm ' && echo '1' || echo '0'",
+     'XBMC_RESET_FILE': '%s/reset_xbmc' % CONFIG_CACHE,
+diff --git a/src/oe.py b/src/oe.py
+index 2130f74..430ece8 100644
+--- a/src/oe.py
++++ b/src/oe.py
+@@ -757,7 +757,7 @@ def parse_os_release():
+ 
+ 
+ def get_os_release():
+-    distribution = version = architecture = build = ''
++    distribution = version = architecture = build = device =''
+     os_release_info = parse_os_release()
+     if os_release_info is not None:
+         if 'NAME' in os_release_info:
+@@ -770,11 +770,14 @@ def get_os_release():
+             architecture = os_release_info['LIBREELEC_ARCH']
+         if 'LIBREELEC_BUILD' in os_release_info:
+             build = os_release_info['LIBREELEC_BUILD']
++        if 'DEVICE' in os_release_info:
++            device = os_release_info['DEVICE']
+         return (
+             distribution,
+             version,
+             architecture,
+             build,
++            device,
+             )
+ 
+ 
+@@ -789,6 +792,7 @@ DISTRIBUTION = os_release_data[0]
+ VERSION = os_release_data[1]
+ ARCHITECTURE = os_release_data[2]
+ BUILD = os_release_data[3]
++DEVICE = os_release_data[4]
+ DOWNLOAD_DIR = '/storage/downloads'
+ XBMC_USER_HOME = os.environ.get('XBMC_USER_HOME', '/storage/.kodi')
+ CONFIG_CACHE = os.environ.get('CONFIG_CACHE', '/storage/.cache')
+diff --git a/src/resources/lib/modules/system.py b/src/resources/lib/modules/system.py
+index 440785b..a0f2b64 100644
+--- a/src/resources/lib/modules/system.py
++++ b/src/resources/lib/modules/system.py
+@@ -45,6 +45,8 @@
+     KERNEL_CMD = None
+     UPDATE_REQUEST_URL = None
+     UPDATE_DOWNLOAD_URL = None
++    UPDATE_REQUEST_URL2 = None
++    UPDATE_DOWNLOAD_URL2 = None
+     LOCAL_UPDATE_DIR = None
+     XBMC_RESET_FILE = None
+     LIBREELEC_RESET_FILE = None
+@@ -564,7 +566,7 @@
+             if not listItem == None:
+                 self.struct['update']['settings']['Build']['value'] = listItem.getProperty('value')
+             if self.struct['update']['settings']['Build']['value'] != '':
+-                self.update_file = self.UPDATE_DOWNLOAD_URL % ('releases', self.struct['update']['settings']['Build']['value'])
++                self.update_file = self.UPDATE_DOWNLOAD_URL2 % ('releases', self.struct['update']['settings']['Build']['value'])
+                 xbmcDialog = xbmcgui.Dialog()
+                 answer = xbmcDialog.yesno('LibreELEC Update', self.oe._(32188).encode('utf-8') + ':  ' + self.oe.VERSION,
+                                       self.oe._(32187).encode('utf-8') + ':  ' + self.struct['update']['settings']['Build']['value'].split('-'
+@@ -582,7 +584,7 @@
+     def get_json(self):
+         try:
+             self.oe.dbg_log('system::get_json', 'enter_function', 0)
+-            url = self.UPDATE_DOWNLOAD_URL % ('releases', 'releases.json')
++            url = self.UPDATE_DOWNLOAD_URL2 % ('releases', 'releases.json')
+             data = self.oe.load_url(url)
+             if not data is None:
+                 update_json = json.loads(data)
+@@ -603,8 +603,8 @@
+             if not self.update_json is None:
+                 if channel != '':
+                     if channel in self.update_json:
+-                        for i in self.update_json[channel]['project'][self.oe.ARCHITECTURE]['releases']:
+-                            update_files.append(self.update_json[channel]['project'][self.oe.ARCHITECTURE]['releases'][i]['file']['name'])
++                        for i in self.update_json[channel]['project'][self.oe.ARCHITECTURE][self.oe.DEVICE]['releases']:
++                            update_files.append(self.update_json[channel]['project'][self.oe.ARCHITECTURE][self.oe.DEVICE]['releases'][i]['file']['name'])
+             self.oe.dbg_log('system::get_available_builds', 'exit_function', 0)
+             return update_files
+         except Exception, e:
+@@ -622,14 +624,23 @@
+                 self.oe.VERSION,
+                 self.cpu_lm_flag,
+                 )
++            url2 = '%s?i=%s&d=%s&pa=%s&v=%s&l=%s' % (
++                self.UPDATE_REQUEST_URL2,
++                self.oe.SYSTEMID,
++                self.oe.DISTRIBUTION,
++                self.oe.ARCHITECTURE,
++                self.oe.VERSION,
++                self.oe.DEVICE,
++                )
+             self.oe.dbg_log('system::check_updates_v2', 'URL: %s' % url, 0)
+             update_json = self.oe.load_url(url)
++            update_json = self.oe.load_url(url2)
+             self.oe.dbg_log('system::check_updates_v2', 'RESULT: %s' % repr(update_json), 0)
+             if update_json != '':
+                 update_json = json.loads(update_json)
+                 self.last_update_check = time.time()
+                 if 'update' in update_json['data'] and 'folder' in update_json['data']:
+-                    self.update_file = self.UPDATE_DOWNLOAD_URL % (update_json['data']['folder'], update_json['data']['update'])
++                    self.update_file = self.UPDATE_DOWNLOAD_URL2 % (update_json['data']['folder'], update_json['data']['update'])
+                     if self.struct['update']['settings']['UpdateNotify']['value'] == '1':
+                         self.oe.notify(self.oe._(32363).encode('utf-8'), self.oe._(32364).encode('utf-8'))
+                     if self.struct['update']['settings']['AutoUpdate']['value'] == 'auto' and force == False:
+

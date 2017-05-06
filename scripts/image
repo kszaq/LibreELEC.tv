@@ -61,7 +61,7 @@ fi
 if [ -z "$DEVICE" ]; then
   TARGET_VERSION="$PROJECT.$TARGET_ARCH-$LIBREELEC_VERSION"
 else
-  TARGET_VERSION="$PROJECT.$DEVICE.$TARGET_ARCH-$LIBREELEC_VERSION"
+   TARGET_VERSION="$PROJECT.$TARGET_ARCH-$DEVICE-$LIBREELEC_VERSION"
 fi
 IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
 
@@ -73,8 +73,8 @@ if [ "$DEVEL_VERSION" = "devel" ] ; then
     IMAGE_NAME="$DISTRONAME-$PROJECT.$TARGET_ARCH-$OS_VERSION-$LIBREELEC_VERSION"
     AML_UPDATE_NAME="$DISTRONAME-$PROJECT.$TARGET_ARCH-$OS_VERSION-$DEVEL_VERSION"
   else
-    IMAGE_NAME="$DISTRONAME-$PROJECT.$DEVICE.$TARGET_ARCH-$OS_VERSION-$LIBREELEC_VERSION"
-    AML_UPDATE_NAME="$DISTRONAME-$PROJECT.$DEVICE.$TARGET_ARCH-$OS_VERSION-$DEVEL_VERSION"
+    IMAGE_NAME="$DISTRONAME-$PROJECT.$TARGET_ARCH-$DEVICE-$OS_VERSION-$LIBREELEC_VERSION"
+    AML_UPDATE_NAME="$DISTRONAME-$PROJECT.$TARGET_ARCH-$DEVICE-$OS_VERSION-$DEVEL_VERSION"
   fi
 fi
 
@@ -123,12 +123,14 @@ fi
   fi
 
   echo "$TARGET_VERSION" > $INSTALL/etc/release
+  echo "$DEVICE" > $INSTALL/etc/device
 
 # create /etc/os-release
   echo -e "NAME=\"$DISTRONAME\"" > $INSTALL/etc/os-release
   echo -e "VERSION=\"$LIBREELEC_VERSION\"" >> $INSTALL/etc/os-release
   echo -e "ID=\"libreelec\"" >> $INSTALL/etc/os-release
   echo -e "VERSION_ID=\"$OS_VERSION\"" >> $INSTALL/etc/os-release
+  echo -e "DEVICE=\"$DEVICE\"" >> $INSTALL/etc/os-release
   echo -e "PRETTY_NAME=\"$DISTRONAME ($LIBREELEC_BUILD) - Version: $LIBREELEC_VERSION\"" >> $INSTALL/etc/os-release
   echo -e "HOME_URL=\"http://www.libreelec.tv\"" >> $INSTALL/etc/os-release
   echo -e "BUG_REPORT_URL=\"$ORIGIN_URL\"" >> $INSTALL/etc/os-release
@@ -478,7 +480,7 @@ fi
 
         # copy other files if any
         if [ -d "$INSTALL_SRC_DIR/files" ]; then
-          cp -PR $INSTALL_SRC_DIR/files/* $AML_PKG_DIR
+          cp -PR $INSTALL_SRC_DIR/files/*.img $AML_PKG_DIR
         fi
 
         # create the update package
@@ -490,13 +492,14 @@ fi
         mkdir -p sign
         SIGNAPK_DIR="$ROOT/tools/signapk"
         java -Xmx1024m -jar $SIGNAPK_DIR/signapk.jar -w $SIGNAPK_DIR/testkey.x509.pem $SIGNAPK_DIR/testkey.pk8 update.zip sign/$AML_UPDATE_NAME-update.zip
+	cp sign/$AML_UPDATE_NAME-update.zip $TARGET_IMG
 
         # create the auto-install package
         echo "Creating Amlogic ZIP auto-install package"
         pushd sign > /dev/null
         echo --update_package=/sdcard/$AML_UPDATE_NAME-update.zip > factory_update_param.aml
         if [ -f "$INSTALL_SRC_DIR/files/recovery.img" ]; then
-          cp $INSTALL_SRC_DIR/files/recovery.img .
+          cp $INSTALL_SRC_DIR/files/recovery.img ./recovery.img
         fi
         if [ -f $INSTALL_SRC_DIR/files/aml_autoscript ]; then
           cp $INSTALL_SRC_DIR/files/aml_autoscript .

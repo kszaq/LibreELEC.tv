@@ -1,0 +1,22 @@
+From 30537ec24bd8cef07bb9487b85cb5c121df2769b Mon Sep 17 00:00:00 2001
+From: "S. Davilla" <davilla@4pi.com>
+Date: Sat, 22 Oct 2016 13:37:41 -0400
+Subject: [PATCH] fixed, mem leak. need to release the msg here as nothing else
+ will handle it
+
+---
+ xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
+index 3665492..5ba97ce 100644
+--- a/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
++++ b/xbmc/cores/AudioEngine/Engines/ActiveAE/ActiveAESink.cpp
+@@ -786,6 +786,7 @@ void CActiveAESink::ReturnBuffers()
+     {
+       samples = *((CSampleBuffer**)msg->data);
+       msg->Reply(CSinkDataProtocol::RETURNSAMPLE, &samples, sizeof(CSampleBuffer*));
++      msg->Release();
+     }
+   }
+ }
