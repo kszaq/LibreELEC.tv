@@ -1,0 +1,23 @@
+diff -ur a/language/English/strings.po b/language/English/strings.po
+--- a/language/English/strings.po
++++ b/language/English/strings.po
+@@ -831,3 +831,7 @@
+ msgctxt "#32392"
+ msgid "Enable Lirc"
+ msgstr ""
++
++msgctxt "#90001"
++msgid "Reboot to apply the update"
++msgstr ""
+diff -ur a/src/resources/lib/modules/system.py b/src/resources/lib/modules/system.py
+--- a/src/resources/lib/modules/system.py
++++ b/src/resources/lib/modules/system.py
+@@ -770,7 +770,7 @@
+                 if 'update' in update_json['data'] and 'folder' in update_json['data']:
+                     self.update_file = self.UPDATE_DOWNLOAD_URL % (update_json['data']['folder'], update_json['data']['update'])
+                     if self.struct['update']['settings']['UpdateNotify']['value'] == '1':
+-                        self.oe.notify(self.oe._(32363).encode('utf-8'), self.oe._(32364).encode('utf-8'))
++                        self.oe.notify(self.oe._(32363).encode('utf-8'), self.oe._(90001).encode('utf-8'))
+                     if self.struct['update']['settings']['AutoUpdate']['value'] == 'auto' and force == False:
+                         self.update_in_progress = True
+                         self.do_autoupdate(None, True)
