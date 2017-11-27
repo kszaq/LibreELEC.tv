@@ -52,7 +52,7 @@ for arg in $(cat /proc/cmdline); do
       if [ -f "/proc/device-tree/le-dt-id" ] ; then
         LE_DT_ID=$(cat /proc/device-tree/le-dt-id)
       else
-        LE_DT_ID=""
+        echo "*** remember to update your device tree! ***"
       fi
       
       if [ -f "$UPDATE_DTB_IMG" ] ; then
