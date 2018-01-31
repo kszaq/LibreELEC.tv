@@ -17,8 +17,8 @@
 ################################################################################
 
 PKG_NAME="fd628-aml"
-PKG_VERSION="dfe7524"
-PKG_SHA256="2689079d55c219340ba776c638033cb4ddcdd2d5ed37f39be6610f88ebf16347"
+PKG_VERSION="6993a86"
+PKG_SHA256="5eb30d485d23c9be427528b3604d564565194f759281677c2b1b66419e6edc15"
 PKG_ARCH="arm aarch64"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/arthur-liberman/linux_fd628"
