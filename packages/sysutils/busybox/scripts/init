@@ -58,7 +58,7 @@
   FLASH_FREE_MIN="5"
 
   INSTALLED_MEMORY=`cat /proc/meminfo | grep 'MemTotal:' | awk '{print $2}'`
-  SYSTEM_TORAM_LIMIT=1024000
+  SYSTEM_TORAM_LIMIT=768000
 
   LIVE="no"
 
