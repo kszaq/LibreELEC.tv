@@ -1,6 +1,6 @@
 --- a/backports/backports.txt
 +++ b/backports/backports.txt
-@@ -25,6 +25,23 @@
+@@ -25,6 +25,24 @@
  add pr_fmt.patch
  add debug.patch
  add drx39xxj.patch
@@ -13,6 +13,7 @@
 +add linux-220-Xbox-One-DVB-T2-stick-support.patch
 +add linux-249-gpioplug.patch
 +add linux-250-meson-ir.patch
++add linux-251-meson-ir-timeout.patch
 +add linux-253-wetek-dvb.patch
 +add linux-260-fix-for-kernel-4.11.patch
 +add linux-261-fix-for-kernel-4.11-dibusb-license.patch
