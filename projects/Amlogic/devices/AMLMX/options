@@ -1,0 +1,41 @@
+################################################################################
+# setup device defaults
+################################################################################
+
+  # The TARGET_CPU variable controls which processor should be targeted for
+  # generated code.
+    case $TARGET_ARCH in
+      arm)
+        TARGET_KERNEL_ARCH="arm"
+        TARGET_FLOAT="hard"
+        TARGET_CPU="cortex-a9"
+        TARGET_FPU="neon"
+        ;;
+    esac
+
+  # Kernel to use
+    LINUX="amlogic-mx"
+
+  # Kernel target
+    KERNEL_TARGET="uImage"
+
+  # Kernel uImage load address
+    KERNEL_UIMAGE_LOADADDR="0x208000"
+
+  # Kernel uImage entry address
+    KERNEL_UIMAGE_ENTRYADDR="0x208000"
+
+  # OpenGL-ES implementation to use
+    OPENGLES="mesa"
+
+  # Graphic drivers to use
+    GRAPHIC_DRIVERS="lima"
+
+  # KODI Player implementation to use
+    KODIPLAYER_DRIVER="$OPENGLES"
+
+  # Mali GPU family
+    MALI_FAMILY="450"
+
+  # Set the addon project
+    ADDON_PROJECT="ARMv7"
