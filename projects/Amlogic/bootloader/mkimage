@@ -5,8 +5,17 @@
 
 mkimage_uboot(){
   echo "image: writing u-boot to $(basename $DISK)"
-  dd if="$INSTALL/usr/share/bootloader/u-boot.bin.sd.bin" of="$DISK" conv=fsync,notrunc bs=1 count=440 >"$SAVE_ERROR" 2>&1 || show_error
-  dd if="$INSTALL/usr/share/bootloader/u-boot.bin.sd.bin" of="$DISK" conv=fsync,notrunc bs=512 skip=1 seek=1 >"$SAVE_ERROR" 2>&1 || show_error
+  case "${UBOOT_SYSTEM}" in
+    odroid-c1)
+      dd if="$INSTALL/usr/share/bootloader/bl1.bin.hardkernel" of="$DISK" conv=fsync,notrunc bs=1 count=440 >"$SAVE_ERROR" 2>&1 || show_error
+      dd if="$INSTALL/usr/share/bootloader/bl1.bin.hardkernel" of="$DISK" conv=fsync,notrunc bs=512 skip=1 seek=1 >"$SAVE_ERROR" 2>&1 || show_error
+      dd if="$INSTALL/usr/share/bootloader/u-boot.bin" of="$DISK" conv=fsync,notrunc bs=512 seek=64 >"$SAVE_ERROR" 2>&1 || show_error
+      ;;
+    default|*)
+      dd if="$INSTALL/usr/share/bootloader/u-boot.bin.sd.bin" of="$DISK" conv=fsync,notrunc bs=1 count=440 >"$SAVE_ERROR" 2>&1 || show_error
+      dd if="$INSTALL/usr/share/bootloader/u-boot.bin.sd.bin" of="$DISK" conv=fsync,notrunc bs=512 skip=1 seek=1 >"$SAVE_ERROR" 2>&1 || show_error
+      ;;
+  esac
 }
 
 mkimage_autoscripts(){
@@ -77,7 +86,7 @@ mkimage_dtb(){
 }
 
 case "${UBOOT_SYSTEM}" in
-  box|"")
+  box|odroid-c1|"")
     DTB="@@DTB_NAME@@"
     mkimage_uEnv
     mkimage_autoscripts
