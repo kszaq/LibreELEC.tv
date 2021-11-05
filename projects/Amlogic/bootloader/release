@@ -21,4 +21,7 @@ mkdir -p "$DSTDIR/dtb"
       cp -a "$SRCDIR"/*g12b*.dtb "$DSTDIR/dtb"
       cp -a "$SRCDIR"/*sm1*.dtb "$DSTDIR/dtb"
       ;;
+    AMLMX)
+      cp -a "$SRCDIR"/meson8*.dtb "$DSTDIR/dtb"
+      ;;
   esac
