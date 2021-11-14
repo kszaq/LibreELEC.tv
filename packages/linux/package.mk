@@ -201,7 +201,14 @@ make_target() {
     KERNEL_TARGET="${KERNEL_TARGET/uImage/Image}"
   fi
 
-  DTC_FLAGS=-@ kernel_make ${KERNEL_TARGET} ${KERNEL_MAKE_EXTRACMD} modules
+  if [[ "${TARGET_KERNEL_ARCH}" = "arm" && "${KERNEL_TARGET}" = "uImage" ]]; then
+    if [ -z "${KERNEL_UIMAGE_LOADADDR}" -o -z "${KERNEL_UIMAGE_ENTRYADDR}" ]; then
+      die "ERROR: KERNEL_UIMAGE_LOADADDR and KERNEL_UIMAGE_ENTRYADDR have to be set to build uImage - aborting"
+    fi
+    DTC_FLAGS=-@ kernel_make LOADADDR="${KERNEL_UIMAGE_LOADADDR}" ${KERNEL_TARGET} ${KERNEL_MAKE_EXTRACMD} modules
+  else
+    DTC_FLAGS=-@ kernel_make ${KERNEL_TARGET} ${KERNEL_MAKE_EXTRACMD} modules
+  fi
 
   if [ "${PKG_BUILD_PERF}" = "yes" ]; then
     ( cd tools/perf
