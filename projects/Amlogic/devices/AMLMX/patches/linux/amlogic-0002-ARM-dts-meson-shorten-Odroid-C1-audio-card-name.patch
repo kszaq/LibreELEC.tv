@@ -1,0 +1,26 @@
+From d9070386a81800d5ac5c0cada9a5a27f734a9549 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Thu, 27 Jan 2022 08:20:27 +0000
+Subject: [PATCH 2/2] ARM: dts: meson: shorten Odroid C1 audio card name
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm/boot/dts/meson8b-odroidc1.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/meson8b-odroidc1.dts b/arch/arm/boot/dts/meson8b-odroidc1.dts
+index 653128f474c5..209fe71ca0d9 100644
+--- a/arch/arm/boot/dts/meson8b-odroidc1.dts
++++ b/arch/arm/boot/dts/meson8b-odroidc1.dts
+@@ -107,7 +107,7 @@
+ 
+ 	sound {
+ 		compatible = "amlogic,gx-sound-card";
+-		model = "M8B-ODROID-C1";
++		model = "ODROID-C1";
+ 
+ 		assigned-clocks = <&clkc CLKID_MPLL0>,
+ 				  <&clkc CLKID_MPLL1>;
+-- 
+2.17.1
+

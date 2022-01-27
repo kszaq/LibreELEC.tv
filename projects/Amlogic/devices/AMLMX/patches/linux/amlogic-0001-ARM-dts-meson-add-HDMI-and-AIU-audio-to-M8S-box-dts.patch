@@ -1,0 +1,105 @@
+From 498339670048bccce43bef09f572abe488c57515 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Thu, 27 Jan 2022 08:36:56 +0000
+Subject: [PATCH 1/2] ARM: dts: meson: add HDMI and AIU audio to M8S box dts
+
+Suggested-by: Mateusz Krzak <kszaquitto@gmail.com>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm/boot/dts/meson8b-mxq.dts | 59 +++++++++++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
+
+diff --git a/arch/arm/boot/dts/meson8b-mxq.dts b/arch/arm/boot/dts/meson8b-mxq.dts
+index 7adedd3258c3..ab5b3e6576e3 100644
+--- a/arch/arm/boot/dts/meson8b-mxq.dts
++++ b/arch/arm/boot/dts/meson8b-mxq.dts
+@@ -27,6 +27,17 @@
+ 		reg = <0x40000000 0x40000000>;
+ 	};
+ 
++	hdmi-connector {
++		compatible = "hdmi-connector";
++		type = "a";
++
++		port {
++			hdmi_connector_in: endpoint {
++				remote-endpoint = <&hdmi_tx_tmds_out>;
++			};
++		};
++	};
++
+ 	vcck: regulator-vcck {
+ 		compatible = "pwm-regulator";
+ 
+@@ -43,6 +54,38 @@
+ 		regulator-always-on;
+ 	};
+ 
++	sound {
++		compatible = "amlogic,gx-sound-card";
++		model = "M8B-MXQ";
++
++		assigned-clocks = <&clkc CLKID_MPLL0>,
++				  <&clkc CLKID_MPLL1>;
++		assigned-clock-rates = <294912000>,
++				       <270950400>;
++
++		dai-link-0 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_FIFO>;
++		};
++
++		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
++			dai-format = "i2s";
++			mclk-fs = <256>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_I2S>;
++			};
++		};
++
++		dai-link-2 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 0>;
++			};
++		};
++	};
++
+ 	vcc_1v8: regulator-vcc1v8 {
+ 		compatible = "regulator-fixed";
+ 
+@@ -91,6 +134,10 @@
+ 	};
+ };
+ 
++&aiu {
++	status = "okay";
++};
++
+ &cpu0 {
+ 	cpu-supply = <&vcck>;
+ };
+@@ -125,6 +172,18 @@
+ 	};
+ };
+ 
++&hdmi_tx {
++	status = "okay";
++	pinctrl-0 = <&hdmi_hpd_pins>, <&hdmi_i2c_pins>;
++	pinctrl-names = "default";
++};
++
++&hdmi_tx_tmds_port {
++	hdmi_tx_tmds_out: endpoint {
++		remote-endpoint = <&hdmi_connector_in>;
++	};
++};
++
+ &mali {
+ 	mali-supply = <&vddee>;
+ };
+-- 
+2.17.1
+
