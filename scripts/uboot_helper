@@ -233,6 +233,10 @@ devices = \
         'dtb': '',
         'config': 'odroid-xu3_defconfig'
       },
+      'odroid-c1': {
+        'dtb': 'meson8b-odroidc1.dtb',
+        'config': 'odroid-xu3_defconfig'
+      },
     },
   },
   'NXP': {
