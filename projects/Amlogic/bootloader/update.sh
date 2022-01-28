@@ -22,21 +22,18 @@
 # mount $BOOT_ROOT rw
   mount -o remount,rw $BOOT_ROOT
 
-# update extlinux device trees
-  if [ -f $BOOT_ROOT/extlinux/extlinux.conf ]; then
-    for dtbfile in $BOOT_ROOT/*.dtb ; do
-      dtb=$(basename $dtbfile)
-      echo "Updating $dtb"
-      cp -p $SYSTEM_ROOT/usr/share/bootloader/$dtb $BOOT_ROOT/ 2>/dev/null || true
-    done
-  fi
-
-# update box device trees
+# update device trees
   if [ -f $BOOT_ROOT/uEnv.ini ]; then
     for dtbfile in $BOOT_ROOT/dtb/*.dtb ; do
       dtb=$(basename $dtbfile)
       echo "Updating $dtb"
       cp -p $SYSTEM_ROOT/usr/share/bootloader/$dtb $BOOT_ROOT/dtb/ 2>/dev/null || true
+    done
+  else
+    for dtbfile in $BOOT_ROOT/*.dtb ; do
+      dtb=$(basename $dtbfile)
+      echo "Updating $dtb"
+      cp -p $SYSTEM_ROOT/usr/share/bootloader/$dtb $BOOT_ROOT/ 2>/dev/null || true
     done
   fi
 
