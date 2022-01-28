@@ -7,9 +7,14 @@ mkimage_uboot(){
   echo "image: writing u-boot to $(basename $DISK)"
   case "${UBOOT_SYSTEM}" in
     odroid-c1)
-      dd if="$INSTALL/usr/share/bootloader/bl1.bin.hardkernel" of="$DISK" conv=fsync,notrunc bs=1 count=440 >"$SAVE_ERROR" 2>&1 || show_error
-      dd if="$INSTALL/usr/share/bootloader/bl1.bin.hardkernel" of="$DISK" conv=fsync,notrunc bs=512 skip=1 seek=1 >"$SAVE_ERROR" 2>&1 || show_error
-      dd if="$INSTALL/usr/share/bootloader/u-boot.bin" of="$DISK" conv=fsync,notrunc bs=512 seek=64 >"$SAVE_ERROR" 2>&1 || show_error
+      FIPDIR="$(get_build_dir amlogic-boot-fip)"
+      FIPMD5=$(md5sum $FIPDIR/u-boot.bin)
+      IMGMD5=$(md5sum $INSTALL/usr/share/bootloader/u-boot.bin)
+      echo "image: fipdir md5 = $FIPMD5"
+      echo "image: u-boot md5 = $IMGMD5"
+      dd if="$FIPDIR/bl1.bin.hardkernel" of="$DISK" conv=fsync,notrunc bs=1 count=440 >"$SAVE_ERROR" 2>&1 || show_error
+      dd if="$FIPDIR/bl1.bin.hardkernel" of="$DISK" conv=fsync,notrunc bs=512 skip=1 seek=1 >"$SAVE_ERROR" 2>&1 || show_error
+      dd if="$FIPDIR/u-boot.bin" of="$DISK" conv=fsync,notrunc bs=512 seek=64 >"$SAVE_ERROR" 2>&1 || show_error
       ;;
     default|*)
       dd if="$INSTALL/usr/share/bootloader/u-boot.bin.sd.bin" of="$DISK" conv=fsync,notrunc bs=1 count=440 >"$SAVE_ERROR" 2>&1 || show_error
@@ -86,10 +91,14 @@ mkimage_dtb(){
 }
 
 case "${UBOOT_SYSTEM}" in
-  box|odroid-c1|"")
+  box|"")
     DTB="@@DTB_NAME@@"
     mkimage_uEnv
     mkimage_autoscripts
+    mkimage_bootini
+    mkimage_dtb
+    ;;
+  odroid-c1)
     mkimage_bootini
     mkimage_dtb
     ;;
